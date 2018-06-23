@@ -1,5 +1,4 @@
 import speech_recognition
-import pyttsx
 import time
 import mytime
 import datetime
@@ -8,15 +7,13 @@ import gsearch
 import mywiki
 import myweather
 import mymusic
+import mylocation
 import googletrans
 from pygame import mixer
 from gtts import gTTS
 import os
-import threading
 
-a = ""
 def say(text):
-
     source_file = "voice.mp3"
     tts = gTTS(text=text, lang='vi')
     tts.save(source_file)
@@ -26,12 +23,9 @@ def say(text):
     while mixer.music.get_busy() == True:
         continue
     time.sleep(1)
-    #mixer.init()
     mixer.music.load("tam.mp3")
-    #os.remove(source_file)
 
 speech_identifier = speech_recognition.Recognizer()
-
 
 def phrase():
 
@@ -48,20 +42,7 @@ now = datetime.datetime.now()
 hr=now.hour
 i = 0
 k = 0
-guest = "Nói chào "
-google = "Google about "
-search = "search for "
-wiki = "Wiki about "
-wiki1 = "tell me about "
-wiki2 = "who is "
-wiki3 = "what is an "
-wiki4 = "what is a "
-weather = "tell me weather forecast of "
-status = "how is the weather in "
-temp = "what is the temperature in "
-wspeed = "what is the wind speed in "
-humidity = "what is the humidity in "
-pressure = "how much is the weather pressure in "
+guest = "nói chào "
 
 say("3   2   1")
 print("\n#####FATE $TART#####\n")
@@ -92,7 +73,7 @@ while 1:
             say("Chào {}. Lâu quá không gặp".format(j))
 
         elif str.find("láo")!=-1 or str.find("xạo")!=-1 or str.find("điêu")!=-1:
-            print("Oan cho mình quá.")
+            print("Oan cho mình quá.\n")
             say("Oan cho mình quá.")
 
         elif str.find("giới thiệu")!= -1 and str.find("mình")!=-1:
@@ -104,7 +85,7 @@ while 1:
             say("Ai kêu em đó, có em đây.Em sẽ có mặt trong vòng 3 nốt nhạc. ")
 
         elif str.find("lâu")!=-1:
-            print("Máy cùi bắp. Ram 4 GB, xài 3 năm rồi thì sao chạy nhanh được\n")
+            print("Máy cùi bắp. Ram 4 GB, xài 3 năm rồi thì sao chạy nhanh được.\n")
             say("Máy cùi bắp. Ram 4 GB, xài 3 năm rồi thì sao chạy nhanh được ")
 
         elif str.find("mấy giờ")!=-1 or str.find("ngày mấy")!=-1 or str.find("tháng mấy")!=-1 or str.find("năm mấy")!=-1 \
@@ -114,10 +95,10 @@ while 1:
 
         elif str == "bye" or str == "buy" or str == "break" or str == "kết thúc":
             if hr >= 20 and hr <=24:
-                print("Chúc bạn ngủ ngon\n")
+                print("Chúc bạn ngủ ngon.\n")
                 say("Chúc bạn ngủ ngon")
             else:
-                print("Hẹn gặp lại\n")
+                print("Hẹn gặp lại.\n")
                 say("Hẹn gặp lại")
             break
 
@@ -131,17 +112,49 @@ while 1:
             say("Hỏi vậy thôi chứ mình không quan tâm")
             k =0
 
-        elif str == guest+str[9:]:  #say hello to ------
-                print("Chào  "+str[9:len(str)-2] +"\n")
-                say("Chào "+str[9:])
+        elif str == guest+str[9:]: 
+            print("Chào  "+str[9:] +"\n")
+            say("Chào "+str[9:])
 
-        elif str == google+str[13:] :
-            say("here we go")
-            gsearch.search(str[13:])
+        elif str.find("google")!= -1:
+            print("Vừng ơi mở ra.\n")
+            say("Vừng ơi mở ra.")
+            gsearch.search(str[str.find("từ")+2:])
 
-        elif str == search+str[11:] :
-            say("I'm on it sir")
-            gsearch.search(str[11:])
+        elif str.find("wikipedia")!= -1 or (str.find("cho")!=-1 and str.find("biết")!=-1) :
+            say("Chờ xíu.")
+            data = mywiki.wiki(str[str.find("về")+2:])
+            print (data+"\n")
+            say(data)
+
+        elif str.find("là ai")!= -1 :
+            print("Đang tìm kiếm thông tin.")
+            say("Đang tìm kiếm thông tin.")
+            data = mywiki.wiki(str[:str.find("là")])
+            print (data+"\n")
+            say(data)
+
+        elif str.find("là cái gì")!= -1 or str.find("định nghĩa về")!= -1 :
+            print("Đang tìm kiếm thông tin.")
+            say("Đang tìm kiếm thông tin.")
+            if str.find("là cái gì")!= -1:
+                data = mywiki.wiki(str[:str.rfind("là")])
+            if str.find("định nghĩa về")!= -1 :
+                data = mywiki.wiki(str[str.find("về")+2:])
+            print (data+"\n")
+            say(data)
+
+        elif str.find("dự báo thời tiết")!= -1  :
+            print("Đang tiến hành thu thập thông tin.")
+            say("Đang tiến hành thu thập thông tin.")
+            report = myweather.completeWeather(str[str.find("tại")+4:])
+            say(report)
+
+        elif str.find("địa chỉ") != -1:
+            print("Đang xử lí. Vui lòng chờ vài giây!!!")
+            say("Đang xử lí. Vui lòng chờ vài giây.")
+            print(mylocation.get_location() + "\n")
+            say(mylocation.get_location())
 
         elif str == "mở máy tính":
             say("Đang mở máy tính")
@@ -171,72 +184,3 @@ while 1:
         elif str != "":
             print("Chức năng này tạm thời chưa được cài đặt. Hãy chờ phiên bản sau.\n")
             say("Chức năng này tạm thời chưa được cài đặt. Hãy chờ phiên bản sau.")
-
-        
-"""
-
-        elif str == wiki+str[11:] :
-            say("yes sir")
-            data = mywiki.wiki(str[11:])
-            print (data+"\n")
-            #time.sleep(5)
-            say(data)
-
-        elif str == wiki1+str[14:] :
-            say("sure sir")
-            data = mywiki.wiki(str[14:])
-            #time.sleep(5)
-            print (data+"\n")
-            say(data)
-
-        elif str == wiki2+str[7:] :
-            say("I'm searching the web")
-            data = mywiki.wiki(str[7:])
-            #time.sleep(5)
-            print (data+"\n")
-            say(data)
-
-        elif str == wiki3+str[11:] :
-            say("I'm on it")
-            data = mywiki.wiki(str[11:])
-            #time.sleep(5)
-            print (data+"\n")
-            say(data)
-
-        elif str == wiki4+str[10:] :
-            say("yes sir")
-            data = mywiki.wiki(str[10:])
-            #time.sleep(5)
-            print (data+"\n")
-            say(data)
-
-        elif str == weather+str[28:] :
-            say("yes sir")
-            report = myweather.completeWeather(str[28:])
-            print(report+"\n")
-            say(report)
-
-        elif str == status+str[22:] :
-            status = myweather.statusWeather(str[22:])
-            print(status+"\n")
-            say(status)
-
-        elif str == temp+str[27:] :
-            temp = myweather.tempWeather(str[27:])
-            print(temp+"\n")
-            say(temp)
-
-        elif str == wspeed+str[26:]:
-            wspeed = myweather.wspeedWeather(str[26:])
-            print(wspeed+"\n")
-            say(wspeed)
-
-        elif str == humidity+str[24:]:
-            humdty = myweather.humidityWeather(str[24:])
-            print(humdty+"\n")
-            say(humdty)
-
-        elif str == pressure+str[36:] :
-            press = myweather.pressureWeather(str[36:])
-            print(press+"\n")
-            say(press)"""
