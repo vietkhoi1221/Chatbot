@@ -8,7 +8,6 @@ import mywiki
 import myweather
 import mymusic
 import mylocation
-import googletrans
 from pygame import mixer
 from gtts import gTTS
 import os
@@ -122,6 +121,7 @@ while 1:
             gsearch.search(str[str.find("từ")+2:])
 
         elif str.find("wikipedia")!= -1 or (str.find("cho")!=-1 and str.find("biết")!=-1) :
+            print("Chờ xíu.")
             say("Chờ xíu.")
             data = mywiki.wiki(str[str.find("về")+2:])
             print (data+"\n")
